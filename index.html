@@ -3,46 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Power Bill Estimator</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Smart Electricity Billing</title>
     <style>
-        body { background-color: #f0f2f5; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .bill-card { background: white; border-radius: 12px; padding: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-top: 50px; }
-        .header-bg { background: #0d6efd; color: white; padding: 20px; border-radius: 12px 12px 0 0; margin: -30px -30px 20px -30px; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .card {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            width: 320px;
+            text-align: center;
+        }
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 22px;
+        }
+        input {
+            width: 90%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 16px;
+            outline: none;
+        }
+        input:focus {
+            border-color: #3b82f6;
+        }
+        button {
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            width: 100%;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background-color: #2563eb;
+        }
+        .result-box {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            color: #0f172a;
+            font-size: 16px;
+            display: none;
+        }
+        .error {
+            color: #ef4444;
+            font-weight: bold;
+            margin-top: 15px;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="bill-card">
-                    <div class="header-bg text-center">
-                        <h3 class="m-0">⚡ Power Bill Estimator</h3>
-                        <p class="mb-0 text-white-50">EE Branch Mini Project</p>
-                    </div>
-                    
-                    <form>
-                        <div class="mb-3">
-                            <label class="form-label text-muted">Customer Name</label>
-                            <input type="text" class="form-control" placeholder="Enter name">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label text-muted">Units Consumed (kWh)</label>
-                            <input type="number" class="form-control" placeholder="e.g. 250">
-                        </div>
-                        <button type="button" class="btn btn-primary w-100 py-2">Calculate Bill Estimation</button>
-                    </form>
 
-                    <hr class="my-4">
-                    
-                    <div class="alert alert-info text-center" role="alert">
-                        <strong>Logic runs in Java!</strong><br> 
-                        (Check BillCalculator.java for the core loop & if-else logic)
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="card">
+        <h2>⚡ Smart Electricity Bill</h2>
+        
+        <input type="number" id="unitInput" placeholder="Enter Units (e.g., 150)">
+        
+        <button onclick="calculateBill()">Calculate Bill</button>
+        
+        <div id="outputMessage" class="error"></div>
+        <div id="billResult" class="result-box"></div>
     </div>
+
+    <script>
+        function calculateBill() {
+            let unitBox = document.getElementById("unitInput").value;
+            let units = parseInt(unitBox);
+            let billAmount = 0.0;
+            
+            let outputMessage = document.getElementById("outputMessage");
+            let billResult = document.getElementById("billResult");
+
+            // Har baar naya bill calculate karne se pehle purana clear kar do
+            outputMessage.innerHTML = "";
+            billResult.style.display = "none";
+
+            // Agar user ne khali box pe click kar diya ya galat number dala
+            if (unitBox === "" || isNaN(units) || units < 0) {
+                outputMessage.innerHTML = "❌ Please enter a valid positive number.";
+                return;
+            }
+
+            // Core Logic
+            if (units <= 100) {
+                billAmount = units * 5.0; 
+            } else if (units <= 200) {
+                billAmount = (100 * 5.0) + ((units - 100) * 7.0); 
+            } else {
+                billAmount = (100 * 5.0) + (100 * 7.0) + ((units - 200) * 10.0); 
+            }
+
+            // Screen par show karo
+            billResult.innerHTML = `Total Units: <strong>${units}</strong> <br> Total Amount: <strong style="color:#16a085; font-size:22px;">₹${billAmount}</strong>`;
+            billResult.style.display = "block";
+        }
+
+        // Enter key dabane par bhi bill nikalne ka feature
+        document.getElementById("unitInput").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault(); // Page refresh hone se rokta hai
+                calculateBill(); // Function ko call kar deta hai
+            }
+        });
+    </script>
+
 </body>
 </html>
